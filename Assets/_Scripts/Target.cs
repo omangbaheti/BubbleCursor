@@ -4,44 +4,52 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    [SerializeField] private bool isResetTarget;
+    [SerializeField] private Color hoverColor = Color.yellow;
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Color selectColor = Color.green;
+    [SerializeField] private Color targetHighlightColor = Color.red;
     private SpriteRenderer sprite;
+    private TargetManager targetManager;
     private bool onSelect;
-    void Start()
+    void Awake()
     {
         sprite = GetComponent<SpriteRenderer>();
+        targetManager = FindObjectOfType<TargetManager>();
     }
     void Update()
     {
         
     }
 
-    public void OnHighlight()
+    public void Highlight()
     {
-
+        defaultColor = targetHighlightColor;
+        sprite.color = defaultColor;
     }
 
     public void OnHoverEnter()
     {
         if(onSelect)return;
-        sprite.color = Color.yellow;
+        sprite.color = hoverColor;
     }
 
     public void OnHoverExit()
     {
         if(onSelect)return;
-        sprite.color = Color.white;
+        sprite.color = defaultColor;
     }
 
     public void OnSelect()
     {
         onSelect = true;
-        sprite.color = Color.green;
-        StartCoroutine(DestroyGameObject(0.1f));
+        sprite.color = selectColor;
+        StartCoroutine(SpawnNextTarget(0.1f));
+        targetManager.SpawnNextTarget(isResetTarget);
     }
 
-    public IEnumerator DestroyGameObject(float seconds)
+    public IEnumerator SpawnNextTarget(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        Destroy(gameObject);
     }
 }

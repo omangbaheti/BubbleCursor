@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 48115015304075681}
   - component: {fileID: 4875660330768697376}
   m_Layer: 0
-  m_Name: Target
+  m_Name: ScreenCentreTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -161,8 +161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de70ae80905df1439ae1f76e5a51768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isResetTarget: 1
-  hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  isResetTarget: 0
+  hoverColor: {r: 1, g: 0.015686274, b: 0.07656051, a: 1}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   selectColor: {r: 0, g: 1, b: 0, a: 1}
   targetHighlightColor: {r: 1, g: 0, b: 0, a: 1}
