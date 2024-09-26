@@ -14,13 +14,12 @@ public class TargetManager : MonoBehaviour
     [SerializeField] private int randomTargetsNumber = 20;
     [SerializeField] List<TrialConditions> blockSequence = new();
     private Vector3 ScreenCentreInWorld => mainCamera.ScreenToWorldPoint(screenCentre) + new Vector3(0,0,10);
-
     private List<float> randomSizes;
     private Camera mainCamera;
-
     private List<Target> targetList = new();
     private Vector2 screenCentre;
     private int currentTrialIndex;
+    private Vector3 currentSpawnPosition;
     private void Start()
     {
         mainCamera = Camera.main;
@@ -31,7 +30,7 @@ public class TargetManager : MonoBehaviour
 
     private void CreateBlock()
     {
-        //Iterating through each EW, targetSize and amplitude and building a list of lists
+        //Iterating through each EW, targetSize and amplitude and building every combination
         for (int i = 0; i < repetitions; i++)
         {
             foreach (float EW in EWToW_Ratio)
@@ -93,17 +92,16 @@ public class TargetManager : MonoBehaviour
         float randomAngle = Random.Range(0, 360);
         Quaternion randomAngleDisplacement = Quaternion.Euler(0,0,randomAngle);
         Vector3 spawnOffset = randomAngleDisplacement * new Vector3(blockSequence[currentTrialIndex].amplitude, 0f, 0f);
-        Vector3 spawnPosition = ScreenCentreInWorld + spawnOffset;
-        GameObject targetObject = Instantiate(target, spawnPosition, Quaternion.identity, transform);
+        currentSpawnPosition = ScreenCentreInWorld + spawnOffset;
+        GameObject targetObject = Instantiate(target, currentSpawnPosition, Quaternion.identity, transform);
         targetObject.transform.localScale = blockSequence[currentTrialIndex].targetSize * Vector3.one;
         targetObject.GetComponent<Target>().Highlight();
-        SpawnDistractorTargets(spawnPosition);
+        SpawnDistractorTargets(currentSpawnPosition);
         currentTrialIndex++;
     }
 
     private void SpawnScreenCentreTarget()
     {
-
         GameObject targetObject = Instantiate(resetTarget, ScreenCentreInWorld, Quaternion.identity, transform);
         targetObject.transform.localScale = Vector3.one * 0.5f;
     }
@@ -140,8 +138,8 @@ public class TargetManager : MonoBehaviour
 
     private void SpawnRandomTargets()
     {
-        List<Vector3> points = GenerateRandomPoints(randomTargetsNumber);
         List<float> randomSizes = GenerateRandomSizes(randomTargetsNumber);
+        List<Vector3> points = GenerateRandomPoints(randomTargetsNumber);
         for (int i = 0; i < randomTargetsNumber; i++)
         {
             GameObject targetObject = Instantiate(target, points[i], Quaternion.identity, transform);
@@ -154,11 +152,20 @@ public class TargetManager : MonoBehaviour
         List<Vector3> pointList = new();
         for (int i = 0; i < numberOfPoints; i++)
         {
-            float randomX = Random.Range(0, Screen.width);
-            float randomY = Random.Range(0, Screen.height);
-            float z = 10f;
-            Vector3 randomScreenPoint = new(randomX, randomY, z);
-            Vector3 randomWorldPoint = mainCamera.ScreenToWorldPoint(randomScreenPoint);
+            bool isValidPosition = false;
+            Vector3 randomWorldPoint;
+
+            do
+            {
+                float randomX = Random.Range(0, Screen.width);
+                float randomY = Random.Range(0, Screen.height);
+                float z = 10f;
+                Vector3 randomScreenPoint = new(randomX, randomY, z);
+                randomWorldPoint = mainCamera.ScreenToWorldPoint(randomScreenPoint);
+                isValidPosition = CheckPositionValidity(randomWorldPoint);
+            }
+            while (isValidPosition);
+
             pointList.Add(randomWorldPoint);
         }
         return pointList;
@@ -174,6 +181,12 @@ public class TargetManager : MonoBehaviour
         }
 
         return sizes;
+    }
+
+    private bool CheckPositionValidity(Vector3 _pos)
+    {
+        float effectiveWidth = blockSequence[currentTrialIndex].EWToW_Ratio * blockSequence[currentTrialIndex].targetSize;
+        return Vector3.Distance(_pos, currentSpawnPosition) < effectiveWidth;
     }
 
     #endregion
