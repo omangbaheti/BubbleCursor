@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private int cursorType;
-    
     private BubbleCursor bubbleCursor;
 
     private void Start()
@@ -22,7 +20,7 @@ public class GameManager : MonoBehaviour
         switch (cursor)
         {
             case CursorType.PointCursor:
-                bubbleCursor.radius = 0.05f;
+                bubbleCursor.radius = 0.025f;
                 break;
             case CursorType.BubbleCursor:
                 bubbleCursor.radius = 10f;

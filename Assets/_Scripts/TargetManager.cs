@@ -15,7 +15,7 @@ public class TargetManager : MonoBehaviour
     [SerializeField] private List<float> targetSizes;
     [SerializeField] private List<float> targetAmplitudes;
     [SerializeField] private List<float> EWToW_Ratio;
-    [SerializeField] private List<CursorType> cursorType;
+    [SerializeField] private List<CursorType> cursorSequence;
     [SerializeField] private int repetitions;
     [SerializeField] private int randomTargetsNumber = 20;
     [SerializeField] List<TrialConditions> blockSequence = new();
@@ -23,12 +23,12 @@ public class TargetManager : MonoBehaviour
     private List<float> randomSizes;
     private Camera mainCamera;
     private GameManager gameManager;
-    private List<Target> targetList = new();
     private Vector2 screenCentre;
     private int currentTrialIndex;
     private Vector3 currentSpawnPosition;
     private float timer = 0f;
     private int missedClicks;
+    private int cursorTypeIndex = 0;
 
     private string[] header = 
     {
@@ -47,6 +47,7 @@ public class TargetManager : MonoBehaviour
         screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
         gameManager = FindObjectOfType<GameManager>();
         CreateBlock();
+        cursorSequence = YatesShuffle(cursorSequence);
         SpawnScreenCentreTarget();
         LogHeader();
     }
@@ -58,26 +59,21 @@ public class TargetManager : MonoBehaviour
 
     private void CreateBlock()
     {
-        //Iterating through each EW, targetSize and amplitude and building every combination
-        foreach (CursorType cursor in cursorType)
+        for (int i = 0; i < repetitions; i++)
         {
-            for (int i = 0; i < repetitions; i++)
+            foreach (float EW in EWToW_Ratio)
             {
-                foreach (float EW in EWToW_Ratio)
+                foreach (float size in targetSizes)
                 {
-                    foreach (float size in targetSizes)
+                    foreach (float amp in targetAmplitudes)
                     {
-                        foreach (float amp in targetAmplitudes)
-                        {
 
-                            blockSequence.Add(new TrialConditions()
-                            {
-                                amplitude = amp,
-                                targetSize = size,
-                                EWToW_Ratio = EW,
-                                cursorType = cursor
-                            });
-                        }
+                        blockSequence.Add(new TrialConditions()
+                        {
+                            amplitude = amp,
+                            targetSize = size,
+                            EWToW_Ratio = EW,
+                        });
                     }
                 }
             }
@@ -106,7 +102,7 @@ public class TargetManager : MonoBehaviour
             Destroy(target.gameObject);
         }
 
-        //If the a target is selected, spawn reset target
+        //If a target is selected, spawn "reset" target at screen centre
         if (reset)
         {
             gameManager.SetCursor(CursorType.PointCursor);
@@ -114,7 +110,7 @@ public class TargetManager : MonoBehaviour
         }
         else // if the "reset" target is selected, spawn the next target in the block
         {
-            gameManager.SetCursor(blockSequence[currentTrialIndex].cursorType);
+            gameManager.SetCursor(cursorSequence[cursorTypeIndex]);
             SpawnMainTarget();
             SpawnRandomTargets();
         }
@@ -137,6 +133,13 @@ public class TargetManager : MonoBehaviour
         targetObject.GetComponent<Target>().Highlight();
         SpawnDistractorTargets(currentSpawnPosition);
         currentTrialIndex++;
+        if (currentTrialIndex == blockSequence.Count - 1)
+        {
+            cursorTypeIndex++;
+            blockSequence.Clear();
+            CreateBlock();
+            currentTrialIndex = 0;
+        }
     }
 
     private void SpawnScreenCentreTarget()
@@ -241,7 +244,7 @@ public class TargetManager : MonoBehaviour
         string[] data =
         {
             participantID.ToString(),
-            "cursorType",
+            cursorSequence[cursorTypeIndex].ToString(),
             blockSequence[currentTrialIndex].amplitude.ToString(),
             blockSequence[currentTrialIndex].targetSize.ToString(),
             blockSequence[currentTrialIndex].EWToW_Ratio.ToString(),
@@ -269,7 +272,6 @@ public class TrialConditions
     public float amplitude;
     public float targetSize;
     public float EWToW_Ratio;
-    public CursorType cursorType;
 }
 
 public enum CursorType
