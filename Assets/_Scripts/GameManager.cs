@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     {
         bubbleCursor.radius = cursor switch
         {
-            CursorType.PointCursor => 0.3f,
+            CursorType.PointCursor => 0.015f,
             CursorType.BubbleCursor => 10f,
             _ => throw new ArgumentOutOfRangeException(nameof(cursor), cursor, null)
         };

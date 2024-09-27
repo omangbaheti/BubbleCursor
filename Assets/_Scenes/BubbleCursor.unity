@@ -4138,7 +4138,7 @@ MonoBehaviour:
     - 2
     - 5
     cursorType: 0
-  repetitions: 1
+  repetitions: 4
   blockSequence: []
 --- !u!114 &1930559073
 MonoBehaviour:
