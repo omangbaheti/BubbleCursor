@@ -6,8 +6,6 @@ using Random = UnityEngine.Random;
 
 public class TargetManager : MonoBehaviour
 {
-    public int participantID;
-
     [SerializeField] private GameObject target;
     [SerializeField] private GameObject resetTarget;
 
@@ -26,11 +24,6 @@ public class TargetManager : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
         studyBehavior = FindObjectOfType<StudyBehavior>();
-    }
-
-    private void Start()
-    {
-        SpawnScreenCentreTarget();
     }
 
     #region PublicFacingCoreLogic
@@ -58,6 +51,7 @@ public class TargetManager : MonoBehaviour
         }
         else // if the "reset" target is selected, spawn the next target in the block
         {
+            gameManager.SetCursor(studyBehavior.StudySettings.cursorType);
             SpawnMainTarget();
             SpawnRandomTargets();
         }

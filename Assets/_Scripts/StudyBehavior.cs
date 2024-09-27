@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 
@@ -32,7 +33,13 @@ public class StudyBehavior : MonoBehaviour
     public TrialConditions CurrentTrial => blockSequence[currentTrialIndex];
     public StudySettings StudySettings => studySettings;
 
-    public int participantID;
+    public int ParticipantID
+    {
+        get => participantID;
+        set => participantID = value;
+    }
+
+    private int participantID;
     [SerializeField] private StudySettings studySettings;
     [SerializeField] private int repetitions;
     [SerializeField] List<TrialConditions> blockSequence = new();
@@ -68,10 +75,9 @@ public class StudyBehavior : MonoBehaviour
     {
         LogData();
         currentTrialIndex++;
-        if (currentTrialIndex == blockSequence.Count - 1)
+        if (currentTrialIndex >= blockSequence.Count)
         {
-            Debug.Log(":Ending");
-            Application.Quit();
+            SceneManager.LoadScene("EndScreen");
         }
     }
 
@@ -124,6 +130,11 @@ public class StudyBehavior : MonoBehaviour
     public void HandleMisClick()
     {
         misClick++;
+    }
+
+    public void SetParticipantID(int ID)
+    {
+        participantID = ID;
     }
 
     private static List<T> YatesShuffle<T>(List<T> list)
