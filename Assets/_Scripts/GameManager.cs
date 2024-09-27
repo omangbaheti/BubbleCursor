@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     public void SetToPointCursor()
     {
-        bubbleCursor.radius = 0.05f;
+        bubbleCursor.radius = 0.005f;
     }
     
     public void SetCursor(CursorType cursor)
@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         switch (cursor)
         {
             case CursorType.PointCursor:
-                bubbleCursor.radius = 0.025f;
+                bubbleCursor.radius = 0.005f;
                 break;
             case CursorType.BubbleCursor:
                 bubbleCursor.radius = 10f;

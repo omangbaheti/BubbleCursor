@@ -29,7 +29,7 @@ public class TargetManager : MonoBehaviour
     private float timer = 0f;
     private int missedClicks;
     private int cursorTypeIndex = 0;
-
+    private int misClick = 0;
     private string[] header = 
     {
         "PID",
@@ -40,14 +40,18 @@ public class TargetManager : MonoBehaviour
         "MT",
         "MissedClicks"
     };
-    
-    private void Start()
+
+    private void Awake()
     {
         mainCamera = Camera.main;
-        screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
         gameManager = FindObjectOfType<GameManager>();
-        CreateBlock();
+        screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
         cursorSequence = YatesShuffle(cursorSequence);
+    }
+
+    private void Start()
+    {
+        CreateBlock();
         SpawnScreenCentreTarget();
         LogHeader();
     }
@@ -90,12 +94,21 @@ public class TargetManager : MonoBehaviour
         StartCoroutine(NextTarget(reset));
     }
 
+    public void HandleMisclick()
+    {
+        misClick++;
+        //If misclick, repeat the condition at the end
+        blockSequence.Add(blockSequence[currentTrialIndex]);
+        StartCoroutine(NextTarget(true));
+    }
+
     public IEnumerator NextTarget(bool reset)
     {
         LogData();
         yield return new WaitForSeconds(0.1f);
         //Clear all targets before spawning the next one
         timer = 0f;
+        misClick = 0;
         Target[] targets = FindObjectsByType<Target>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (Target target in targets)
         {
@@ -114,6 +127,8 @@ public class TargetManager : MonoBehaviour
             SpawnMainTarget();
             SpawnRandomTargets();
         }
+
+
     }
 
     #endregion
@@ -130,7 +145,7 @@ public class TargetManager : MonoBehaviour
         currentSpawnPosition = ScreenCentreInWorld + spawnOffset;
         GameObject targetObject = Instantiate(target, currentSpawnPosition, Quaternion.identity, transform);
         targetObject.transform.localScale = blockSequence[currentTrialIndex].targetSize * Vector3.one;
-        targetObject.GetComponent<Target>().Highlight();
+        targetObject.GetComponent<Target>().SetMainTarget();
         SpawnDistractorTargets(currentSpawnPosition);
         currentTrialIndex++;
         if (currentTrialIndex == blockSequence.Count - 1)
@@ -144,7 +159,6 @@ public class TargetManager : MonoBehaviour
 
     private void SpawnScreenCentreTarget()
     {
-        gameManager.SetToPointCursor();
         GameObject targetObject = Instantiate(resetTarget, ScreenCentreInWorld, Quaternion.identity, transform);
         targetObject.transform.localScale = Vector3.one * 0.5f;
     }
@@ -249,7 +263,7 @@ public class TargetManager : MonoBehaviour
             blockSequence[currentTrialIndex].targetSize.ToString(),
             blockSequence[currentTrialIndex].EWToW_Ratio.ToString(),
             timer.ToString(),
-            "MissedClicks"
+            misClick.ToString()
         };
         CSVManager.AppendToCSV(data);
     }

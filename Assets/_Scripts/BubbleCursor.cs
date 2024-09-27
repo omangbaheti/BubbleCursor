@@ -85,7 +85,9 @@ public class BubbleCursor : MonoBehaviour
         if (collider.TryGetComponent(out Target target))
         {
             target.OnHoverEnter();
-            bubbleVisual.transform.DOScale(expandedBubbleRadius*2+1f, 0.1f);
+            float bubbleScale = expandedBubbleRadius * 2 + 1f;
+            bubbleScale = Mathf.Clamp(bubbleScale, 0, radius);
+            bubbleVisual.transform.DOScale(bubbleScale, 0.05f);
         }
         else
         {

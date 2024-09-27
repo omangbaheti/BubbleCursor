@@ -7,15 +7,14 @@ public class CSVManager : MonoBehaviour
     // File path to the CSV
     private static string filePath;
 
-    private void Start()
+    private void Awake()
     {
         // Set the file path (you can customize this path)
         filePath = Path.Combine(Application.dataPath, "data.csv");
-        
     }
 
     // Method to write data to a CSV file
-    public void WriteToCSV(List<string[]> data)
+    public static void WriteToCSV(List<string[]> data)
     {
         using (StreamWriter sw = new(filePath))
         {
@@ -24,7 +23,6 @@ public class CSVManager : MonoBehaviour
                 sw.WriteLine(string.Join(",", line));
             }
         }
-
     }
 
     public static void AppendToCSV(string[] data)
