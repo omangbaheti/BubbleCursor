@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    public TrialConditions TrialConditions;
     [SerializeField] private bool isResetTarget;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color defaultColor = Color.white;
@@ -12,6 +13,8 @@ public class Target : MonoBehaviour
     private SpriteRenderer sprite;
     private TargetManager targetManager;
     private bool onSelect;
+    private float timer = 0f;
+
     void Awake()
     {
         sprite = GetComponent<SpriteRenderer>();
@@ -19,7 +22,7 @@ public class Target : MonoBehaviour
     }
     void Update()
     {
-        
+        timer += Time.deltaTime;
     }
 
     public void Highlight()
@@ -47,6 +50,8 @@ public class Target : MonoBehaviour
         StartCoroutine(SpawnNextTarget(0.1f));
         targetManager.SpawnNextTarget(isResetTarget);
     }
+
+
 
     public IEnumerator SpawnNextTarget(float seconds)
     {

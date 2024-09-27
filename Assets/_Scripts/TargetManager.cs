@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class TargetManager : MonoBehaviour
 {
+    public int participantID;
     [SerializeField] private GameObject target;
     [SerializeField] private GameObject resetTarget;
     [SerializeField] private List<float> targetSizes;
@@ -20,12 +22,18 @@ public class TargetManager : MonoBehaviour
     private Vector2 screenCentre;
     private int currentTrialIndex;
     private Vector3 currentSpawnPosition;
+    private float timer = 0f;
     private void Start()
     {
         mainCamera = Camera.main;
         screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
         CreateBlock();
         SpawnScreenCentreTarget();
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
     }
 
     private void CreateBlock()
@@ -63,7 +71,15 @@ public class TargetManager : MonoBehaviour
 
     public void SpawnNextTarget(bool reset)
     {
+        StartCoroutine(NextTarget(reset));
+    }
+
+    public IEnumerator NextTarget(bool reset)
+    {
+        LogData();
+        yield return new WaitForSeconds(0.1f);
         //Clear all targets before spawning the next one
+        timer = 0f;
         Target[] targets = FindObjectsByType<Target>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (Target target in targets)
         {
@@ -191,6 +207,18 @@ public class TargetManager : MonoBehaviour
 
     #endregion
 
+    private void LogData()
+    {
+        string[] data =
+        {
+            participantID.ToString(),
+            blockSequence[currentTrialIndex].amplitude.ToString(),
+            blockSequence[currentTrialIndex].targetSize.ToString(),
+            blockSequence[currentTrialIndex].EWToW_Ratio.ToString(),
+            timer.ToString()
+        };
+        CSVManager.AppendToCSV(data);
+    }
 
     private static List<T> YatesShuffle<T>(List<T> list)
     {

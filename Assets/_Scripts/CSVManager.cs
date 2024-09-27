@@ -5,7 +5,7 @@ using UnityEngine;
 public class CSVManager : MonoBehaviour
 {
     // File path to the CSV
-    private string filePath;
+    private static string filePath;
 
     private void Start()
     {
@@ -47,15 +47,12 @@ public class CSVManager : MonoBehaviour
 
     }
 
-    public void AppendToCSV(List<string[]> data)
+    public static void AppendToCSV(string[] data)
     {
         // Use StreamWriter with append set to true
         using (StreamWriter sw = new StreamWriter(filePath, true))
         {
-            foreach (var line in data)
-            {
-                sw.WriteLine(string.Join(",", line));
-            }
+            sw.WriteLine(string.Join(",", data));
         }
 
         Debug.Log($"Data successfully appended to {filePath}");
