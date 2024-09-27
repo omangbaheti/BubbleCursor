@@ -12,6 +12,7 @@ public class Target : MonoBehaviour
     [SerializeField] private Color targetHighlightColor = Color.red;
     private SpriteRenderer sprite;
     private TargetManager targetManager;
+    private StudyBehavior studyBehavior;
     private bool onSelect;
     private float timer = 0f;
     private bool isMainTarget = false;
@@ -51,11 +52,12 @@ public class Target : MonoBehaviour
 
         if (isMainTarget || !isResetTarget)
         {
+            studyBehavior.NextTrial();
             targetManager.SpawnNextTarget(isResetTarget);
         }
         else //If a distractor target is selected
         {
-            targetManager.HandleMisclick();
+            sprite.color = defaultColor;
         }
 
     }
