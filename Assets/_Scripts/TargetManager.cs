@@ -25,6 +25,7 @@ public class TargetManager : MonoBehaviour
         mainCamera = Camera.main;
         gameManager = FindObjectOfType<GameManager>();
         screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
+        studyBehavior = FindObjectOfType<StudyBehavior>();
     }
 
     private void Start()
@@ -44,9 +45,9 @@ public class TargetManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         //Clear all targets before spawning the next one
         Target[] targets = FindObjectsByType<Target>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        foreach (Target target in targets)
+        foreach (Target _target in targets)
         {
-            Destroy(target.gameObject);
+            Destroy(_target.gameObject);
         }
 
         //If a target is selected, spawn "reset" target at screen centre

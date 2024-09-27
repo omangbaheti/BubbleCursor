@@ -18,6 +18,7 @@ public class StudySettings
     public List<float> targetSizes;
     public List<float> targetAmplitudes;
     public List<float> EWToW_Ratio;
+    public CursorType cursorType;
 }
 
 public enum CursorType
@@ -33,20 +34,13 @@ public class StudyBehavior : MonoBehaviour
 
     public int participantID;
     [SerializeField] private StudySettings studySettings;
-    [SerializeField] private List<float> targetSizes;
-    [SerializeField] private List<float> targetAmplitudes;
-    [SerializeField] private List<float> EWToW_Ratio;
-    [SerializeField] private CursorType cursorType;
     [SerializeField] private int repetitions;
-    [SerializeField] private int randomTargetsNumber = 20;
     [SerializeField] List<TrialConditions> blockSequence = new();
 
-    private int misclick;
     private float timer = 0f;
     private int misClick = 0;
-    private int currentTrialIndex;
+    private int currentTrialIndex = 0;
     private int missedClicks;
-    private int cursorTypeIndex = 0;
 
     private string[] header =
     {
@@ -76,6 +70,7 @@ public class StudyBehavior : MonoBehaviour
         currentTrialIndex++;
         if (currentTrialIndex == blockSequence.Count - 1)
         {
+            Debug.Log(":Ending");
             Application.Quit();
         }
     }
@@ -84,11 +79,11 @@ public class StudyBehavior : MonoBehaviour
     {
         for (int i = 0; i < repetitions; i++)
         {
-            foreach (float EW in EWToW_Ratio)
+            foreach (float EW in studySettings.EWToW_Ratio)
             {
-                foreach (float size in targetSizes)
+                foreach (float size in studySettings.targetSizes)
                 {
-                    foreach (float amp in targetAmplitudes)
+                    foreach (float amp in studySettings.targetAmplitudes)
                     {
 
                         blockSequence.Add(new TrialConditions()
@@ -114,7 +109,7 @@ public class StudyBehavior : MonoBehaviour
         string[] data =
         {
             participantID.ToString(),
-            cursorType.ToString(),
+            studySettings.cursorType.ToString(),
             blockSequence[currentTrialIndex].amplitude.ToString(),
             blockSequence[currentTrialIndex].targetSize.ToString(),
             blockSequence[currentTrialIndex].EWToW_Ratio.ToString(),
@@ -128,7 +123,7 @@ public class StudyBehavior : MonoBehaviour
 
     public void HandleMisClick()
     {
-
+        misClick++;
     }
 
     private static List<T> YatesShuffle<T>(List<T> list)
@@ -138,7 +133,6 @@ public class StudyBehavior : MonoBehaviour
             int randomIndex = Random.Range(0, i + 1);
             (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
         }
-
         return list;
     }
 }

@@ -20,6 +20,7 @@ public class Target : MonoBehaviour
     {
         sprite = GetComponent<SpriteRenderer>();
         targetManager = FindObjectOfType<TargetManager>();
+        studyBehavior = FindObjectOfType<StudyBehavior>();
     }
     void Update()
     {
@@ -58,6 +59,7 @@ public class Target : MonoBehaviour
         else //If a distractor target is selected
         {
             sprite.color = defaultColor;
+            studyBehavior.HandleMisClick();
         }
 
     }
