@@ -11,27 +11,7 @@ public class CSVManager : MonoBehaviour
     {
         // Set the file path (you can customize this path)
         filePath = Path.Combine(Application.dataPath, "data.csv");
-
-        // Example data to write to the CSV
-        List<string[]> dataToWrite = new()
-        {
-            new[] { "Name", "Age", "Score" },
-            new[] { "John", "23", "100" },
-            new[] { "Jane", "29", "90" },
-            new[] { "Alice", "25", "95" }
-        };
-
-        // Write the data
-        WriteToCSV(dataToWrite);
-
-        // Read the data back
-        List<string[]> dataRead = ReadFromCSV(filePath);
-
-        // Output the read data to the console
-        foreach (var row in dataRead)
-        {
-            Debug.Log(string.Join(",", row));
-        }
+        
     }
 
     // Method to write data to a CSV file

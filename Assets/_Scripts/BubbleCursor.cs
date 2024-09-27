@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 
 public class BubbleCursor : MonoBehaviour
 {
-    [SerializeField] private float radius;
+    public float radius;
     [SerializeField] private ContactFilter2D contactFilter;
     [SerializeField] private Transform bubbleVisual;
 

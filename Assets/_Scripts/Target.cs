@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    public TrialConditions TrialConditions;
     [SerializeField] private bool isResetTarget;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color defaultColor = Color.white;

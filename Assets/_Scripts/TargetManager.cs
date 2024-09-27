@@ -7,28 +7,48 @@ using Random = UnityEngine.Random;
 public class TargetManager : MonoBehaviour
 {
     public int participantID;
+    
     [SerializeField] private GameObject target;
     [SerializeField] private GameObject resetTarget;
+    
+    [Header("Study Settings")]
     [SerializeField] private List<float> targetSizes;
     [SerializeField] private List<float> targetAmplitudes;
     [SerializeField] private List<float> EWToW_Ratio;
+    [SerializeField] private List<CursorType> cursorType;
     [SerializeField] private int repetitions;
     [SerializeField] private int randomTargetsNumber = 20;
     [SerializeField] List<TrialConditions> blockSequence = new();
     private Vector3 ScreenCentreInWorld => mainCamera.ScreenToWorldPoint(screenCentre) + new Vector3(0,0,10);
     private List<float> randomSizes;
     private Camera mainCamera;
+    private GameManager gameManager;
     private List<Target> targetList = new();
     private Vector2 screenCentre;
     private int currentTrialIndex;
     private Vector3 currentSpawnPosition;
     private float timer = 0f;
+    private int missedClicks;
+
+    private string[] header = 
+    {
+        "PID",
+        "CT",
+        "A",
+        "W",
+        "EWW",
+        "MT",
+        "MissedClicks"
+    };
+    
     private void Start()
     {
         mainCamera = Camera.main;
         screenCentre = new Vector2(Screen.width/2, Screen.height / 2);
+        gameManager = FindObjectOfType<GameManager>();
         CreateBlock();
         SpawnScreenCentreTarget();
+        LogHeader();
     }
 
     private void Update()
@@ -39,32 +59,32 @@ public class TargetManager : MonoBehaviour
     private void CreateBlock()
     {
         //Iterating through each EW, targetSize and amplitude and building every combination
-        for (int i = 0; i < repetitions; i++)
+        foreach (CursorType cursor in cursorType)
         {
-            foreach (float EW in EWToW_Ratio)
+            for (int i = 0; i < repetitions; i++)
             {
-                foreach (float size in targetSizes)
+                foreach (float EW in EWToW_Ratio)
                 {
-                    foreach (float amp in targetAmplitudes)
+                    foreach (float size in targetSizes)
                     {
-
-                        blockSequence.Add(new TrialConditions()
+                        foreach (float amp in targetAmplitudes)
                         {
-                            amplitude = amp,
-                            targetSize = size,
-                            EWToW_Ratio = EW
-                        });
+
+                            blockSequence.Add(new TrialConditions()
+                            {
+                                amplitude = amp,
+                                targetSize = size,
+                                EWToW_Ratio = EW,
+                                cursorType = cursor
+                            });
+                        }
                     }
                 }
             }
         }
+        
 
         blockSequence = YatesShuffle(blockSequence);
-
-        // foreach (TrialConditions var in blockSequence)
-        // {
-        //     Debug.Log($"{var.amplitude} {var.EWToW_Ratio} {var.targetSize}");
-        // }
     }
 
     #region PublicFacingCoreLogic
@@ -89,10 +109,12 @@ public class TargetManager : MonoBehaviour
         //If the a target is selected, spawn reset target
         if (reset)
         {
+            gameManager.SetCursor(CursorType.PointCursor);
             SpawnScreenCentreTarget();
         }
         else // if the "reset" target is selected, spawn the next target in the block
         {
+            gameManager.SetCursor(blockSequence[currentTrialIndex].cursorType);
             SpawnMainTarget();
             SpawnRandomTargets();
         }
@@ -104,6 +126,7 @@ public class TargetManager : MonoBehaviour
 
     private void SpawnMainTarget()
     {
+        
         //Calculate Spawn position
         float randomAngle = Random.Range(0, 360);
         Quaternion randomAngleDisplacement = Quaternion.Euler(0,0,randomAngle);
@@ -118,6 +141,7 @@ public class TargetManager : MonoBehaviour
 
     private void SpawnScreenCentreTarget()
     {
+        gameManager.SetToPointCursor();
         GameObject targetObject = Instantiate(resetTarget, ScreenCentreInWorld, Quaternion.identity, transform);
         targetObject.transform.localScale = Vector3.one * 0.5f;
     }
@@ -207,15 +231,22 @@ public class TargetManager : MonoBehaviour
 
     #endregion
 
+    private void LogHeader()
+    {
+        CSVManager.AppendToCSV(header);
+    }
+
     private void LogData()
     {
         string[] data =
         {
             participantID.ToString(),
+            "cursorType",
             blockSequence[currentTrialIndex].amplitude.ToString(),
             blockSequence[currentTrialIndex].targetSize.ToString(),
             blockSequence[currentTrialIndex].EWToW_Ratio.ToString(),
-            timer.ToString()
+            timer.ToString(),
+            "MissedClicks"
         };
         CSVManager.AppendToCSV(data);
     }
@@ -238,5 +269,11 @@ public class TrialConditions
     public float amplitude;
     public float targetSize;
     public float EWToW_Ratio;
+    public CursorType cursorType;
 }
 
+public enum CursorType
+{
+    PointCursor = 0,
+    BubbleCursor = 1
+}
