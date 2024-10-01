@@ -132,11 +132,6 @@ public class StudyBehavior : MonoBehaviour
         misClick++;
     }
 
-    public void SetParticipantID(int ID)
-    {
-        participantID = ID;
-    }
-
     private static List<T> YatesShuffle<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
