@@ -51,9 +51,14 @@ public class Target : MonoBehaviour
         onSelect = true;
         sprite.color = selectColor;
 
-        if (isMainTarget || !isResetTarget)
+        if (isMainTarget)
         {
             studyBehavior.NextTrial();
+            targetManager.SpawnNextTarget(isResetTarget);
+        }
+        else if(!isResetTarget)
+        {
+            studyBehavior.ResetTimer();
             targetManager.SpawnNextTarget(isResetTarget);
         }
         else //If a distractor target is selected

@@ -127,6 +127,12 @@ public class StudyBehavior : MonoBehaviour
         misClick = 0;
     }
 
+    public void ResetTimer()
+    {
+        timer = 0f;
+        misClick = 0;
+    }
+
     public void HandleMisClick()
     {
         misClick++;
